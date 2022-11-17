@@ -1,8 +1,7 @@
 #include "Point.h"
-Point::Point(int dim){
+Point::Point(int dim) {
   // coords.reserve(dim);
-  for(int i=0;i<dim;i++)
-    coords.push_back(0.0);
+  for (int i = 0; i < dim; i++) coords.push_back(0.0);
 }
 Point::Point(std::vector<float> point) {
   coords.reserve(point.size());
@@ -18,18 +17,18 @@ void Point::print() {
   std::cout << "," << std::endl;
 }
 
-void Point::add_coord(int pos,float value) { 
-  if(pos<coords.size())
-    this->coords[pos]=value;
-  }
+void Point::add_coord(int pos, float value) {
+  if (pos < coords.size()) this->coords[pos] = value;
+}
 
 float Point::eucledian_distance(Point &x1, Point &x2) {
   float distance = 0;
   if (x1.coords.size() == x2.coords.size()) {
     for (int i = 0; i < x1.coords.size(); i++)
       distance += pow((x1.coords[i] - x2.coords[i]), 2);
-  }
-  return sqrt(distance);
+    return sqrt(distance);
+  } else
+    throw std::invalid_argument("Argument's dimension wrong");
 }
 bool Point::operator==(const Point &obj) const {
   bool equal = true;
@@ -38,62 +37,64 @@ bool Point::operator==(const Point &obj) const {
       if (!approximatelyEqual(coords[i], obj.coords[i],
                               std::numeric_limits<float>::epsilon()))
         equal = false;
+    return equal;
   } else
-    return false;
-  return equal;
+    throw std::invalid_argument("Argument's dimension wrong");
 }
 bool Point::operator!=(const Point &obj) const { return !operator==(obj); }
 
 bool Point::approximatelyEqual(float a, float b, float epsilon) const {
   return fabs(a - b) <= epsilon;
 }
-//Add exception different size
+// Add exception different size
 Point Point::operator+(const Point &obj) const {
   Point new_point = Point(coords.size());
   if (obj.coords.size() == coords.size()) {
     for (int i = 0; i < coords.size(); i++)
-      new_point.coords[i]=coords[i] + obj.coords[i];
-  }
-  return new_point;
+      new_point.coords[i] = coords[i] + obj.coords[i];
+    return new_point;
+  } else
+    throw std::invalid_argument("Argument's dimension wrong");
 }
-//Add exception ...
-Point& Point::operator+=(const Point &obj) { 
+// Add exception ...
+Point &Point::operator+=(const Point &obj) {
   if (obj.coords.size() == coords.size()) {
-    for (int i = 0; i < coords.size(); i++)
-      coords[i]+=obj.coords[i];
-  }
-  return *this;
+    for (int i = 0; i < coords.size(); i++) coords[i] += obj.coords[i];
+    return *this;
+  } else
+    throw std::invalid_argument("Argument's dimension wrong");
 }
-//Add exception
+// Add exception
 Point Point::operator-(const Point &obj) const {
   Point new_point = Point(coords.size());
   if (obj.coords.size() == coords.size()) {
     for (int i = 0; i < coords.size(); i++)
-      new_point.coords[i]=(coords[i] - obj.coords[i]);
-  }
-  return new_point;
+      new_point.coords[i] = (coords[i] - obj.coords[i]);
+    return new_point;
+  } else
+    throw std::invalid_argument("Argument's dimension wrong");
 }
-//Add exception ...
-Point& Point::operator-=(const Point &obj) { 
+// Add exception ...
+Point &Point::operator-=(const Point &obj) {
   if (obj.coords.size() == coords.size()) {
-    for (int i = 0; i < coords.size(); i++)
-      coords[i]-=obj.coords[i];
-  }
+    for (int i = 0; i < coords.size(); i++) coords[i] -= obj.coords[i];
+    return *this;
+  } else
+    throw std::invalid_argument("Argument's dimension wrong");
+}
+Point &Point::operator=(const Point &obj) {
+  coords = obj.coords;
   return *this;
 }
-Point& Point::operator=(const Point &obj){
-  coords=obj.coords;
-  return *this;
-}
-Point Point::operator/(const float &scalar) const{
-  Point new_point=Point(coords);
-  for(int i=0;i<coords.size();i++)
-    new_point.coords[i]=coords[i]/scalar;
-  return new_point;
-}
-Point Point::operator*(const float &scalar) const{
+Point Point::operator/(const float &scalar) const {
   Point new_point = Point(coords);
   for (int i = 0; i < coords.size(); i++)
-      new_point.coords[i]=coords[i]*scalar;
+    new_point.coords[i] = coords[i] / scalar;
+  return new_point;
+}
+Point Point::operator*(const float &scalar) const {
+  Point new_point = Point(coords);
+  for (int i = 0; i < coords.size(); i++)
+    new_point.coords[i] = coords[i] * scalar;
   return new_point;
 }
