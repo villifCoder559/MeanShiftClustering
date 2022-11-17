@@ -6,18 +6,27 @@
 
 class Point {
  public:
-  static float eucledian_distance(Point x1, Point x2);
+  static float eucledian_distance(Point &x1, Point &x2);
 
  public:
   //int id;
   std::vector<float> coords;
   Point(std::vector<float> point);
-	Point(){};
-  void add_coord(float value);
+	Point(int dim);
+  void add_coord(int pos,float value);
   void print();
-  bool operator ==(Point &obj);
-  bool operator !=(Point &obj);
+  bool operator ==(const Point &obj)const;
+  bool operator !=(const Point &obj)const;
+  Point operator +(const Point &obj)const;
+  Point operator -(const Point &obj)const;
+  Point& operator =(const Point &obj);
+  Point& operator +=(const Point &obj);
+  Point& operator -=(const Point &obj);
+  Point operator *(const float &scalar) const;
+  Point operator /(const float &scalar) const;
+
+  
 private:
-  bool approximatelyEqual(float a, float b, float epsilon);
+  bool approximatelyEqual(float a, float b, float epsilon) const;
 };
 #endif
