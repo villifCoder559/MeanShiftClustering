@@ -1,19 +1,27 @@
 #include "MeanShift.h"
 
-MeanShift::MeanShift(std::vector<Point> points, float bandwidth) {
+MeanShift::MeanShift(std::vector<Point> points, float bandwidth,
+                     type_kernel kernel) {
   this->bandwidth = bandwidth;
   this->points = points;
+  if (kernel == gaussian)
+    this->kernel = new KernelGaussian();
+  else
+    this->kernel = new KernelFlat();
 }
 // update-> return centroids instead of points
 std::vector<Point> MeanShift::fit() {
-  std::vector<std::vector<float> > shift_vectors(points.size());
   int dim = points[0].coords.size();
+  std::vector<Point> mean_vectors;
+  for(int i=0;i<points.size();i++){
+    mean_vectors.push_back(Point(dim));
+  }
   float highest_norm = 6;
   int count = 0;
   do {
     for (int i = 0; i < points.size(); i++) {
-      shift_vectors[i] = compute_shift_vector(points[i]);
-      float norm = compute_norm_L2(shift_vectors[i]);
+      mean_vectors[i] = compute_new_mean(points[i]);
+      float norm = Point::eucledian_distance(points[i],mean_vectors[i]);
       if (i == 0)
         highest_norm = norm;
       else if (norm > highest_norm)
@@ -21,55 +29,41 @@ std::vector<Point> MeanShift::fit() {
     }
     std::cout << "TOP_NORM " << highest_norm << std::endl;
     for (int i = 0; i < points.size(); i++) {
-      for (int j = 0; j < dim; j++) {
-        points[i].coords[j] -= shift_vectors[i][j];
-      }
+        points[i] = mean_vectors[i];
     }
     count++;
-  } while (highest_norm > 0.1);
+  } while (highest_norm > 0.001);
   return get_centroids();
 }
-std::vector<float> MeanShift::compute_shift_vector(Point p) {
-  std::vector<float> shift(p.coords.size(), 0.0);
+Point MeanShift::compute_new_mean(Point p) {
+  Point mean = Point(p.coords.size());
   float scale_factor = 0;
-  // float constant_value=pow(2*M_PI,p.coords.size());
-  for (int dim = 0; dim < p.coords.size(); dim++) {
-    for (int i = 0; i < points.size(); i++) {
-      if (p != points[i]) {
-        float dist = Point::eucledian_distance(p, points[i]);
-        float weight = exp((-0.5 * pow(dist,2) / (pow(bandwidth, 2))));
-        // std::cout<<weight<<std::endl;
-        shift[dim] += points[i].coords[dim] * weight;
-        scale_factor += weight;
-      }
+  for (int i = 0; i < points.size(); i++) {
+    if (p != points[i]) {
+      float dist = Point::eucledian_distance(p, points[i]);
+      float weight = kernel->compute(dist, bandwidth);
+      mean += points[i] * weight;
+      scale_factor += weight;
     }
-    shift[dim] = shift[dim] / scale_factor;
-    scale_factor = 0.0;
   }
-  for (int i = 0; i < p.coords.size(); i++) 
-		shift[i] = p.coords[i] - shift[i];
-  return shift;
-}
-float MeanShift::compute_norm_L2(std::vector<float> vector) {
-  float norm = 0;
-  for (int i = 0; i < vector.size(); i++) {
-    norm += pow(vector[i], 2);
-  }
-  return sqrt(norm);
+  if(scale_factor!=0)
+        mean = mean / scale_factor;
+  // for (int i = 0; i < p.coords.size(); i++)
+    // mean.coords[i] = p.coords[i] - mean.coords[i];
+  return mean;
 }
 std::vector<Point> MeanShift::get_centroids() {
   std::vector<Point> centroids;
   centroids.push_back(points[0]);
   for (int i = 1; i < points.size(); i++) {
-    std::vector<float> best_match = find_nearest_centroid(points[i],centroids);
-    if (best_match[1] > 5)
-			centroids.push_back(points[i]); 
-	}
-	return centroids;
+    std::vector<float> best_match = find_nearest_centroid(points[i], centroids);
+    if (best_match[1] > 2) centroids.push_back(points[i]);
+  }
+  return centroids;
 }
-std::vector<float> MeanShift::find_nearest_centroid(Point &point,std::vector<Point> centroids) {
+std::vector<float> MeanShift::find_nearest_centroid(Point &point, std::vector<Point> &centroids) {
   std::vector<float> best_match = {-1, 0};
-	for (int j = 0; j < centroids.size(); j++) {
+  for (int j = 0; j < centroids.size(); j++) {
     float dist = Point::eucledian_distance(point, centroids[j]);
     if (j == 0) {
       best_match[0] = j;
@@ -79,5 +73,12 @@ std::vector<float> MeanShift::find_nearest_centroid(Point &point,std::vector<Poi
       best_match[1] = dist;
     }
   }
-	return best_match;
+  return best_match;
 }
+type_kernel MeanShift::get_type_kernel() {
+  if (typeid(*kernel) == typeid(KernelGaussian))
+    return gaussian;
+  else
+    return flat;
+}
+MeanShift::~MeanShift() { delete kernel; }
