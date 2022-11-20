@@ -10,13 +10,15 @@ class Point {
 
  public:
   //int id;
-  std::vector<float> coords;
   Point(std::vector<float> point);
 	Point(int dim);
   void add_coord(int pos,float value);
   void print();
   bool operator ==(const Point &obj)const;
   bool operator !=(const Point &obj)const;
+  std::vector<float> get_coords(){
+    return coords;
+  }
   Point operator +(const Point &obj)const;
   Point operator -(const Point &obj)const;
   Point& operator =(const Point &obj);
@@ -25,8 +27,10 @@ class Point {
   Point operator *(const float &scalar) const;
   Point operator /(const float &scalar) const;
 
+
   
 private:
+  std::vector<float> coords;
   bool approximatelyEqual(float a, float b, float epsilon) const;
 };
 #endif
