@@ -1,0 +1,14 @@
+4D data
+  clustering.fit total time-> ~18 seconds
+  clustering.fit PARALLEL -> 4.64 seconds
+  MeanShift::fit()
+    time 1° for -> 9.2 * 2 seconds
+      compute_mean -> 9.1 * 2 secs
+      euc_distance -> 0.1 * 2 secs
+    time 2° for -> 0 secs 
+  MeanShift::fit() PARALLEL
+    time 1° for -> 2.31 * 2 seconds
+
+Eucledian_dist 50->120
+  d*d => time: 0.011
+  pow => time: 0.030
