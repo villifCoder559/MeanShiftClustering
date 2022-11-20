@@ -6,7 +6,7 @@
 
 class Point {
  public:
-  static float eucledian_distance(Point &x1, Point &x2);
+  static float calc_L2_norm_approx(Point &x1, Point &x2);
 
  public:
   //int id;
