@@ -1,8 +1,8 @@
 #include "Point.h"
 Point::Point(int dim) {
-  coords.reserve(dim);
-  for (int i = 0; i < dim; i++)
-    coords.push_back(0.0);
+  coords.resize(dim);
+  // for (int i = 0; i < dim; i++)
+  //   coords.push_back(0.0);
 }
 Point::Point(std::vector<float> point) {
   coords.reserve(point.size());
@@ -24,17 +24,31 @@ void Point::add_coord(int pos, float value) {
   if (pos < coords.size())
     this->coords[pos] = value;
 }
-
+void Point::set_zeros() {
+  const int dim = coords.size();
+  for (int i = 0; i < dim; i++)
+    coords[i] = 0;
+}
 float Point::calc_L2_norm_approx(Point &x1, Point &x2) {
   float distance = 0;
-  if (x1.coords.size() == x2.coords.size()) {
-    const int dim=x1.coords.size();
-    for (int i = 0; i < dim; i++){
-    const float d=x1.coords[i]-x2.coords[i];
-    distance += d*d;
+  int dim = x1.coords.size();
+  for (int i = 0; i < dim; i++) {
+    const float d = x1.coords[i] - x2.coords[i];
+    distance += d * d;
     //  distance+=pow(x1.coords[i]-x2.coords[i],2);
+  }
+  return (distance);
+}
+float Point::calc_L2_norm(Point &x1, Point &x2) {
+  float distance = 0;
+  if (x1.coords.size() == x2.coords.size()) {
+    const int dim = x1.coords.size();
+    for (int i = 0; i < dim; i++) {
+      const float d = x1.coords[i] - x2.coords[i];
+      distance += d * d;
+      //  distance+=pow(x1.coords[i]-x2.coords[i],2);
     }
-    return (distance);
+    return sqrt(distance);
   } else
     throw std::invalid_argument("Argument's dimension wrong");
 }
@@ -51,57 +65,60 @@ bool Point::operator==(const Point &obj) const {
 bool Point::operator!=(const Point &obj) const { return !operator==(obj); }
 
 bool Point::approximatelyEqual(float a, float b, float epsilon) const { return fabs(a - b) <= epsilon; }
-
+std::vector<float> Point::get_coords() { return coords; }
 Point Point::operator+(const Point &obj) const {
-  Point new_point = Point(coords.size());
-  if (obj.coords.size() == coords.size()) {
-    for (int i = 0; i < coords.size(); i++)
-      new_point.coords[i] = coords[i] + obj.coords[i];
-    return new_point;
-  } else
-    throw std::invalid_argument("Argument's dimension wrong");
+  const int dim = coords.size();
+  Point new_point = Point(dim);
+  for (int i = 0; i < dim; i++)
+    new_point.coords[i] = coords[i] + obj.coords[i];
+  return new_point;
 }
 
 Point &Point::operator+=(const Point &obj) {
-  if (obj.coords.size() == coords.size()) {
-    for (int i = 0; i < coords.size(); i++)
-      coords[i] += obj.coords[i];
-    return *this;
-  } else
-    throw std::invalid_argument("Argument's dimension wrong");
+  const int dim = coords.size();
+  for (int i = 0; i < dim; i++)
+    coords[i] += obj.coords[i];
+  return *this;
 }
 
 Point Point::operator-(const Point &obj) const {
-  Point new_point = Point(coords.size());
-  if (obj.coords.size() == coords.size()) {
-    for (int i = 0; i < coords.size(); i++)
-      new_point.coords[i] = (coords[i] - obj.coords[i]);
-    return new_point;
-  } else
-    throw std::invalid_argument("Argument's dimension wrong");
+  const int dim = coords.size();
+  Point new_point = Point(dim);
+  for (int i = 0; i < dim; i++)
+    new_point.coords[i] = (coords[i] - obj.coords[i]);
+  return new_point;
 }
 
 Point &Point::operator-=(const Point &obj) {
-  if (obj.coords.size() == coords.size()) {
-    for (int i = 0; i < coords.size(); i++)
-      coords[i] -= obj.coords[i];
-    return *this;
-  } else
-    throw std::invalid_argument("Argument's dimension wrong");
+  const int dim = coords.size();
+  for (int i = 0; i < dim; i++)
+    coords[i] -= obj.coords[i];
+  return *this;
 }
 Point &Point::operator=(const Point &obj) {
   coords = obj.coords;
   return *this;
 }
 Point Point::operator/(const float &scalar) const {
-  Point new_point = Point(coords);
-  for (int i = 0; i < coords.size(); i++)
+  const int dim = coords.size();
+  Point new_point = Point(dim);
+  for (int i = 0; i < dim; i++)
     new_point.coords[i] = coords[i] / scalar;
   return new_point;
 }
 Point Point::operator*(const float &scalar) const {
-  Point new_point = Point(coords);
-  for (int i = 0; i < coords.size(); i++)
+  const int dim = coords.size();
+  Point new_point = Point(dim);
+  for (int i = 0; i < dim; i++)
     new_point.coords[i] = coords[i] * scalar;
   return new_point;
+}
+/*
+  mean = mean + points[j] * weight;
+*/
+Point &Point::sum_product(Point p, float weight) {
+  const int dim = coords.size();
+  for (int i = 0; i < dim; i++)
+    coords[i] += p.coords[i] * weight;
+  return *this;
 }
