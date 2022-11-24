@@ -28,7 +28,6 @@ class Point {
   Point operator /(const float &scalar) const;
   Point& sum_product(Point p, float weight);
 
-  
 private:
   std::vector<float> coords;
   bool approximatelyEqual(float a, float b, float epsilon) const;
