@@ -7,6 +7,7 @@
 class Point {
  public:
   static float calc_L2_norm_approx(Point &x1, Point &x2);
+  static float calc_L2_norm(Point &x1, Point &x2);
 
  public:
   //int id;
@@ -14,11 +15,10 @@ class Point {
 	Point(int dim);
   void add_coord(int pos,float value);
   void print();
+  void set_zeros();
   bool operator ==(const Point &obj)const;
   bool operator !=(const Point &obj)const;
-  std::vector<float> get_coords(){
-    return coords;
-  }
+  std::vector<float> get_coords();
   Point operator +(const Point &obj)const;
   Point operator -(const Point &obj)const;
   Point& operator =(const Point &obj);
@@ -26,7 +26,7 @@ class Point {
   Point& operator -=(const Point &obj);
   Point operator *(const float &scalar) const;
   Point operator /(const float &scalar) const;
-
+  Point& sum_product(Point p, float weight);
 
   
 private:
