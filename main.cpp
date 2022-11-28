@@ -3,8 +3,9 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
-
-#include "MeanShift.h"
+#include <string>
+#include "MeanShiftSequential.h"
+#include "MeanShiftParallel.h"
 #include "Point.h"
 
 std::vector<Point> read_point_from_file();
@@ -14,14 +15,14 @@ void print_labels(std::vector<unsigned short int>);
 int main() {
   std::vector<Point> points = read_point_from_file();
   std::cout<<points.size()<<std::endl;
-  MeanShift clustering = MeanShift(5, flat);
-  std::cout << "Bandwidth: " << clustering.get_bandwidth() << " using " << (clustering.get_type_kernel() == gaussian ? "gaussian" : "flat") << " kernel " << std::endl;
+  MeanShift *clustering = new MeanShiftParallel(5, flat);
+  std::cout << "Bandwidth: " << clustering->get_bandwidth() << " using " << (clustering->get_type_kernel() == gaussian ? "gaussian" : "flat") << " kernel " << std::endl;
   float distance = 0;
   int count = 0;
   int tot=points.size();
   std::cout<<tot<<std::endl;
   double start = omp_get_wtime();
-  auto centroids = clustering.fit(points);
+  auto centroids = clustering->fit(points);
   double end = omp_get_wtime();
   std::cout << "TIME: " << end - start << std::endl;
   print_all_points(centroids);

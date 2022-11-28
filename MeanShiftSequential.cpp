@@ -4,8 +4,6 @@ MeanShiftSequential::MeanShiftSequential(float bandwidth, type_kernel kernel, sh
 float MeanShiftSequential::get_bandwidth() { return sqrt(bandwidth); }
 
 std::vector<Point> MeanShiftSequential::fit(std::vector<Point> points) {
-  if (points.size() == 0)
-    throw std::invalid_argument("points vector empty");
   int dim = points[0].get_coords().size();
   int tot = points.size();
   int iterations = 0;

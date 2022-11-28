@@ -4,8 +4,6 @@ MeanShiftParallel::MeanShiftParallel(float bandwidth, type_kernel kernel, short 
 float MeanShiftParallel::get_bandwidth() { return sqrt(bandwidth); }
 
 std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points) {
-  if (points.size() == 0)
-    throw std::invalid_argument("points vector empty");
   int dim = points[0].get_coords().size();
   int tot = points.size();
   int iterations = 0;
