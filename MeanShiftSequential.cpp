@@ -1,35 +1,35 @@
 #include "MeanShiftSequential.h"
 
-MeanShiftSequential::MeanShiftSequential(float bandwidth, type_kernel kernel, short int max_iterations):MeanShift(bandwidth,kernel,max_iterations){}
+MeanShiftSequential::MeanShiftSequential(float bandwidth, short int max_iterations) : MeanShift(bandwidth,  max_iterations) {}
 float MeanShiftSequential::get_bandwidth() { return sqrt(bandwidth); }
 
-std::vector<Point> MeanShiftSequential::fit(std::vector<Point> points) {
+std::vector<Point> MeanShiftSequential::fit(std::vector<Point> points,int n_threads=0) {
   int dim = points[0].get_coords().size();
   int tot = points.size();
   int iterations = 0;
-  std::vector<Point> mean_vectors;
+  std::vector<Point> mean_vectors = points;
   float highest_norm = -1;
   float scale_factor = 0;
-  float threshold = 1e-3 * bandwidth;
-  Point mean = Point(dim);
-  mean_vectors.resize(points.size(), Point(dim));
+  float threshold = 0.1 * sqrt(bandwidth);
+  // mean_vectors.resize(points.size(), Point(dim));
   labels.resize(tot);
   std::cout << "Start fitting..." << std::endl;
   do {
     highest_norm = -1;
     double start = omp_get_wtime();
     for (int i = 0; i < tot; i++) {
-      for (int j = 0; j < tot; j++) {
+      for (int j = i; j < tot; j++) {
         float dist = Point::calc_L2_norm_approx(points[i], points[j]);
-        float weight = kernel->compute(dist, bandwidth);
-        if (weight != 0) {
-          mean.sum_product(points[j], weight);
-          scale_factor += weight;
+        // float weight = kernel->compute(dist, bandwidth);
+        if (dist <= bandwidth) {
+          mean_vectors[i].weight += 1;
+          mean_vectors[j].weight += 1;
+          mean_vectors[i].sum_product(points[j], 1);
+          mean_vectors[j].sum_product(points[i], 1);
         }
       }
-      mean_vectors[i] = mean / scale_factor;
-      scale_factor = 0;
-      mean.set_zeros();
+      mean_vectors[i].normalize(mean_vectors[i].weight);
+      mean_vectors[i].weight = 0;
     }
     for (int i = 0; i < tot; i++) {
       float norm = (Point::calc_L2_norm_approx(points[i], mean_vectors[i]));
@@ -39,6 +39,7 @@ std::vector<Point> MeanShiftSequential::fit(std::vector<Point> points) {
     double end = omp_get_wtime();
     iterations++;
     std::cout << "Iterations " << iterations << " completed in " << end - start << std::endl;
+    // std::cout << highest_norm << std::endl;
   } while (highest_norm > threshold && iterations < max_iterations);
   double start = omp_get_wtime();
   centroids = compute_centroids(points);
@@ -75,8 +76,5 @@ std::vector<float> MeanShiftSequential::find_nearest_centroid(Point &point, std:
 
 unsigned short int MeanShiftSequential::predict(Point p) { return (unsigned short int)find_nearest_centroid(p, centroids)[0]; }
 std::vector<unsigned short int> MeanShiftSequential::get_labels() { return labels; }
-type_version MeanShiftSequential::get_version(){ return sequential;}
-type_kernel MeanShiftSequential::get_type_kernel(){
-  return MeanShift::get_type_kernel();
-}
-MeanShiftSequential::~MeanShiftSequential() { delete kernel; }
+type_version MeanShiftSequential::get_version() { return sequential; }
+MeanShiftSequential::~MeanShiftSequential() { }
