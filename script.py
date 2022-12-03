@@ -4,6 +4,7 @@ import random
 from sklearn.cluster import MeanShift
 from sklearn.datasets import make_blobs
 from datetime import datetime
+
 def create_file_output(name,array):
   nr_elements=array.shape[0]
   count=0
@@ -12,7 +13,6 @@ def create_file_output(name,array):
   for element in array:
     line=""
     count+=1
-    ["{0:0.2f}".format(i) for i in a]
     for value in element:
       line+=str(value)+","
     if line!="":
@@ -31,18 +31,19 @@ def generate_blobs(dim_point,nr_clusters,nr_points,cluster_std=0.6):
     clusters[i]=point
   return make_blobs(n_samples = nr_points, centers = clusters,cluster_std = cluster_std)
 
-
-X, _ = generate_blobs(4,10,50_000)
-print("Start fitting...")
-ms = MeanShift(bandwidth=5)
-start = datetime.now()
-ms.fit(X)
-end = datetime.now()
-print("Fitting completed in "+str((end-start))+" ms")
-create_file_output("points.txt",X)
-create_file_output("centroids.txt",ms.cluster_centers_)
-
-
-
-
+n_points=[10000,25000,50000,100000,200000]
+n_centroids=[5,10,20,50,100]
+n_dims=[2,3,4,5]
+default_n_points=50_000
+default_n_dims=3
+default_n_centroids=10
+for element in n_points:
+  X, _ = generate_blobs(default_n_dims,default_n_centroids,element)
+  create_file_output("points_"+str(element)+".txt",X)
+for element in n_centroids:
+  X, _ = generate_blobs(default_n_dims,element,default_n_points)
+  create_file_output("centroids_"+str(element)+".txt",X)
+for element in n_dims:
+  X, _ = generate_blobs(element,default_n_dims,default_n_points)
+  create_file_output("dims_"+str(element)+".txt",X)
 
