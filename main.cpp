@@ -1,42 +1,56 @@
 #include <omp.h>
 
+#include "MeanShiftParallel.h"
+#include "MeanShiftSequential.h"
+#include "Point.h"
+#include <cstdio>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "MeanShiftSequential.h"
-#include "MeanShiftParallel.h"
-#include "Point.h"
 
-std::vector<Point> read_point_from_file();
+std::vector<Point> read_point_from_file(std::string);
 void print_all_points(std::vector<Point>);
 void print_labels(std::vector<unsigned short int>);
-
+void test(std::string, std::vector<int>, int);
 int main() {
-  std::vector<Point> points = read_point_from_file();
-  std::cout<<points.size()<<std::endl;
-  MeanShift *clustering = new MeanShiftParallel(5, flat);
-  std::cout << "Bandwidth: " << clustering->get_bandwidth() << " using " << (clustering->get_type_kernel() == gaussian ? "gaussian" : "flat") << " kernel " << std::endl;
-  float distance = 0;
-  int count = 0;
-  int tot=points.size();
-  std::cout<<tot<<std::endl;
-  double start = omp_get_wtime();
-  auto centroids = clustering->fit(points);
-  double end = omp_get_wtime();
-  std::cout << "TIME: " << end - start << std::endl;
-  print_all_points(centroids);
-  // print_labels(clustering.get_labels());
+  std::vector<int> n_points = {100000};
+  std::vector<int> n_centroids = {5, 10, 20, 50, 100};
+  std::vector<int> n_dims = {2, 3, 4, 5};
+  // for (int i = 4; i <= 16; i += 4) {
+    // std::cout << "n_threads: " << i << std::endl;
+  test("points", n_points,16);
+  // }
+  // test("centroids", n_centroids);
+  // test("dims", n_dims);
+  // std::getchar();
+  // print_all_points(centroids);
+  //  print_labels(clustering.get_labels());
   return 0;
 }
-
-std::vector<Point> read_point_from_file() {
+void test(std::string test_name, std::vector<int> arr, int n_threads) {
+  for (int i = 0; i < arr.size(); i++) {
+    std::vector<Point> points = read_point_from_file(test_name + "_" + std::to_string(arr[i]) + ".txt");
+    MeanShift *clustering = new MeanShiftParallel(5);
+    std::cout << test_name + "_" + std::to_string(arr[i]) + ".txt" << std::endl;
+    std::cout << (clustering->get_version() ? "Parallel" : "Sequential") << " Mean Shift" << std::endl;
+    std::cout << "Bandwidth: " << clustering->get_bandwidth() << " using "
+              << "flat kernel " << std::endl;
+    double start = omp_get_wtime();
+    auto centroids = clustering->fit(points, n_threads);
+    double end = omp_get_wtime();
+    std::cout << "TIME: " << end - start << std::endl;
+    std::cout << "" << std::endl;
+    // print_all_points(centroids);
+  }
+}
+std::vector<Point> read_point_from_file(std::string name) {
   std::vector<Point> points;
-  std::ifstream file("..\\points.txt");
+  std::ifstream file("..\\" + name);
   std::string line;
+  std::getline(file, line, ',');
   int i = -1;
   int count = 0;
-  std::getline(file, line, ',');
   int dim = std::stoi(line);
   while (std::getline(file, line, ',')) {
     if (count % dim == 0) {

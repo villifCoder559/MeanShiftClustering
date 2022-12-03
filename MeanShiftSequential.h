@@ -5,12 +5,11 @@
 
 class MeanShiftSequential: public MeanShift {
 public:
-  MeanShiftSequential(float bandwidth, type_kernel kernel, short int max_iterations = 50);
+  MeanShiftSequential(float bandwidth, short int max_iterations = 50);
   ~MeanShiftSequential();
-  std::vector<Point> fit(std::vector<Point> points);
+  std::vector<Point> fit(std::vector<Point> points,int n_threads);
   /*Find the closest cluster to point p*/
   unsigned short int predict(Point p);
-  type_kernel get_type_kernel();
   /*id n-th corresponds to centroid in position n-th*/
   std::vector<unsigned short int> get_labels();
   float get_bandwidth();

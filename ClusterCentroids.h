@@ -1,8 +1,6 @@
 #ifndef _CENTROIDS_
 #define _CENTROIDS_
-#include "Kernel.h"
-#include "KernelFlat.h"
-#include "KernelGaussian.h"
+
 #include "Point.h"
 #include <fstream>
 #include <iostream>
