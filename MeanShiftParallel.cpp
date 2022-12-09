@@ -25,7 +25,7 @@ std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threa
       float dist = 0;
       // float weight = 0;
 // #pragma omp declare reduction(+ : Point : omp_out += omp_in) initializer(omp_priv = omp_orig)
-#pragma omp for firstprivate(mean) schedule(guided)
+#pragma omp for firstprivate(mean) 
       for (int i = 0; i < tot; i++) {
         for (int j = 0; j < tot; j++) {
           dist = Point::calc_L2_norm_approx(points[i], points[j]);

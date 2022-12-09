@@ -14,12 +14,12 @@ void print_all_points(std::vector<Point>);
 void print_labels(std::vector<unsigned short int>);
 void test(std::string, std::vector<int>, int);
 int main() {
-  std::vector<int> n_points = {100000};
+  std::vector<int> n_points = {200000};
   std::vector<int> n_centroids = {5, 10, 20, 50, 100};
   std::vector<int> n_dims = {2, 3, 4, 5};
   // for (int i = 4; i <= 16; i += 4) {
     // std::cout << "n_threads: " << i << std::endl;
-  test("points", n_points,16);
+  test("points", n_points,20);
   // }
   // test("centroids", n_centroids);
   // test("dims", n_dims);
