@@ -46,7 +46,10 @@ public:
     }
     return (distance);
   }
-  inline void set_zeros() { coords = std::vector<float>(coords.size()); }
+  inline Point &set_zeros() { 
+    coords = std::vector<float>(coords.size()); 
+    return *this;
+  }
 
 private:
   std::vector<float> coords;

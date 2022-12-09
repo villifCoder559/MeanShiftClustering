@@ -38,7 +38,7 @@ std::vector<Point> MeanShiftSequential::fit(std::vector<Point> points,int n_thre
     }
     double end = omp_get_wtime();
     iterations++;
-    std::cout << "Iterations " << iterations << " completed in " << end - start << std::endl;
+    std::cout << "Iteration " << iterations << " completed in " << end - start << std::endl;
     // std::cout << highest_norm << std::endl;
   } while (highest_norm > threshold && iterations < max_iterations);
   double start = omp_get_wtime();

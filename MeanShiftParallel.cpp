@@ -11,7 +11,7 @@ std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threa
   int iterations = 0;
   std::vector<Point> mean_vectors;
   float highest_norm = -1;
-  float threshold = 0.1 * sqrt(bandwidth);
+  float threshold = 0.1f * sqrt(bandwidth);
   Point mean = Point(dim);
   mean_vectors.resize(points.size(), Point(dim));
   labels.resize(tot);
@@ -19,20 +19,19 @@ std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threa
   do {
     highest_norm = -1;
     double start = omp_get_wtime();
-#pragma omp parallel shared(points, mean_vectors) firstprivate(tot) 
+#pragma omp parallel shared(points, mean_vectors) firstprivate(tot) num_threads(n_threads)
     {
       float scalar = 0;
       float dist = 0;
       // float weight = 0;
 // #pragma omp declare reduction(+ : Point : omp_out += omp_in) initializer(omp_priv = omp_orig)
-#pragma omp for firstprivate(mean) 
+#pragma omp for firstprivate(mean) schedule(guided)
       for (int i = 0; i < tot; i++) {
         for (int j = 0; j < tot; j++) {
           dist = Point::calc_L2_norm_approx(points[i], points[j]);
-          // weight = dist > bandwidth ? 1.0 : 0.0;
           if (dist <= bandwidth) {
-            mean.sum_product(points[j], 1.0);
-            scalar += 1.0;
+            mean.sum_product(points[j], 1.0f);
+            scalar += 1.0f;
           }
         }
         mean.normalize(scalar);
@@ -49,7 +48,7 @@ std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threa
     }
     double end = omp_get_wtime();
     iterations++;
-    std::cout << "Iterations " << iterations << " completed in " << end - start << std::endl;
+    std::cout << "Iteration " << iterations << " completed in " << end - start << std::endl;
   } while (highest_norm > threshold && iterations < max_iterations);
   double start = omp_get_wtime();
   centroids = compute_centroids(points);
