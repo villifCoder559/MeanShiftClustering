@@ -7,11 +7,11 @@ You can read a detailed pdf **project report** inside the folder "project_report
 ### Prerequisites
 - C++ compiler that supports OpenMP
  
-## Results
+### Results
 The results of the tests show that the parallel implementation, using OpenMP, is significantly faster than the sequential implementation,
 especially when the dataset is large and the number of clusters is high. 
 
-## Conclusion
+### Conclusion
 This project demonstrates that parallelization can be a powerful tool for speeding up the mean shift clustering algorithm.
 By using OpenMP, we were able to achieve significant speedup without compromising the accuracy of the clustering results.
 This makes it a suitable option for big data analysis.
