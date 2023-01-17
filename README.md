@@ -5,7 +5,8 @@ The parallel implementation is done using OpenMP, a widely used application prog
 
 ## Results
 The results of the tests show that the parallel implementation, using OpenMP, is significantly faster than the sequential implementation,
-especially when the dataset is large and the number of clusters is high. You can read a detailed pdf project report inside the folder "project_report".
+especially when the dataset is large and the number of clusters is high. 
+You can read a detailed pdf project report inside the folder "project_report".
 
 ## Conclusion
 This project demonstrates that parallelization can be a powerful tool for speeding up the mean shift clustering algorithm.
