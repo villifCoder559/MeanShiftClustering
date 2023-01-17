@@ -1,6 +1,6 @@
 # Mean Shift Clustering: A Comparison of Parallel and Sequential Implementations
 This project compares the performance of a parallel and a sequential implementation of the mean shift clustering algorithm, in order to determine the best approach for a given dataset and computational resources. 
-The project is implemented in C++, and uses the sklearn library for testing the correctness of the parallel mean shift clustering algorithm. 
+The project is implemented in C++, and uses the sklearn library to test the correctness of the parallel mean-shift clustering algorithm. 
 The parallel implementation is done using OpenMP, a widely used application programming interface for shared-memory parallelism.
 
 ## Results
