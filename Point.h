@@ -30,7 +30,7 @@ public:
       coords[i] += p.coords[i] * weight;
     return *this;
   }
-  inline Point &normalize(const float &weight) {
+  inline Point &division(const float &weight) {
     const int dim = coords.size();
 #pragma omp unroll full
     for (int i = 0; i < dim; i++)

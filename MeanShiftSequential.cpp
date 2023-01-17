@@ -28,7 +28,7 @@ std::vector<Point> MeanShiftSequential::fit(std::vector<Point> points,int n_thre
           mean_vectors[j].sum_product(points[i], 1);
         }
       }
-      mean_vectors[i].normalize(mean_vectors[i].weight);
+      mean_vectors[i].division(mean_vectors[i].weight);
       mean_vectors[i].weight = 0;
     }
     for (int i = 0; i < tot; i++) {

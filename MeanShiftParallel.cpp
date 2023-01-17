@@ -3,6 +3,7 @@
 MeanShiftParallel::MeanShiftParallel(float bandwidth, short int max_iterations) : MeanShift(bandwidth, max_iterations) {}
 float MeanShiftParallel::get_bandwidth() { return sqrt(bandwidth); }
 
+
 std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threads) {
   if (n_threads <= 0)
     n_threads = omp_get_num_threads();
@@ -23,9 +24,7 @@ std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threa
     {
       float scalar = 0;
       float dist = 0;
-      // float weight = 0;
-// #pragma omp declare reduction(+ : Point : omp_out += omp_in) initializer(omp_priv = omp_orig)
-#pragma omp for firstprivate(mean) schedule(guided)
+#pragma omp for firstprivate(mean) schedule(dynamic)
       for (int i = 0; i < tot; i++) {
         for (int j = 0; j < tot; j++) {
           dist = Point::calc_L2_norm_approx(points[i], points[j]);
@@ -34,7 +33,7 @@ std::vector<Point> MeanShiftParallel::fit(std::vector<Point> points, int n_threa
             scalar += 1.0f;
           }
         }
-        mean.normalize(scalar);
+        mean.division(scalar);
         mean_vectors[i] = mean;
         mean.set_zeros();
         scalar = 0;
