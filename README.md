@@ -4,7 +4,7 @@ The project is implemented in C++, and uses the sklearn library to test the corr
 The parallel implementation is done using OpenMP, a widely used application programming interface for shared-memory parallelism.<br/>
 You can read a detailed pdf **project report** inside the folder "project_report".
 
-### Prerequisites
+## Prerequisites
 - C++ compiler that supports OpenMP
  
 ### Results
