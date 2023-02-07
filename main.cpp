@@ -9,18 +9,15 @@
 #include <iostream>
 #include <string>
 
-std::vector<Point> read_point_from_file(std::string);
+std::vector<Point> read_points_from_file(std::string);
 void print_all_points(std::vector<Point>);
 void print_labels(std::vector<unsigned short int>);
 void test(std::string, std::vector<int>, int);
 int main() {
-  std::vector<int> n_points = {200000};
+  std::vector<int> n_points = {25000};
   std::vector<int> n_centroids = {5, 10, 20, 50, 100};
   std::vector<int> n_dims = {2, 3, 4, 5};
-  // for (int i = 4; i <= 16; i += 4) {
-    // std::cout << "n_threads: " << i << std::endl;
   test("points", n_points,20);
-  // }
   // test("centroids", n_centroids);
   // test("dims", n_dims);
   // std::getchar();
@@ -30,7 +27,7 @@ int main() {
 }
 void test(std::string test_name, std::vector<int> arr, int n_threads) {
   for (int i = 0; i < arr.size(); i++) {
-    std::vector<Point> points = read_point_from_file(test_name + "_" + std::to_string(arr[i]) + ".txt");
+    std::vector<Point> points = read_points_from_file(test_name + "_" + std::to_string(arr[i]) + ".txt");
     MeanShift *clustering = new MeanShiftParallel(5);
     std::cout << test_name + "_" + std::to_string(arr[i]) + ".txt" << std::endl;
     std::cout << (clustering->get_version() ? "Parallel" : "Sequential") << " Mean Shift" << std::endl;
@@ -41,10 +38,10 @@ void test(std::string test_name, std::vector<int> arr, int n_threads) {
     double end = omp_get_wtime();
     std::cout << "TIME: " << end - start << std::endl;
     std::cout << "" << std::endl;
-    // print_all_points(centroids);
+    print_all_points(centroids);
   }
 }
-std::vector<Point> read_point_from_file(std::string name) {
+std::vector<Point> read_points_from_file(std::string name) {
   std::vector<Point> points;
   std::ifstream file("..\\" + name);
   std::string line;
